@@ -16,3 +16,13 @@ self.addEventListener('install', (event) => {
       .then(self.skipWaiting())
   );
 });
+
+self.addEventListener("activate", event => {
+  const cachesUsed = [precache, runtime];
+  event.waitUntil(
+    caches.keys()
+      .then(cacheNames => cacheNames.filter(cacheName => !cachesUsed.includes(cacheName)))
+      .then(cachesToDelete => Promise.all(cachesToDelete.map(cacheToDelete => caches.delete(cacheToDelete))))
+      .then(() => self.clients.claim())
+  );
+});
