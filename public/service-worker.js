@@ -1,27 +1,28 @@
-const files_to_cache = [
-    '/',
-    'index.html',
-    'styles.css',
-    "manifest.webmanifest",
-    "icons/icon-192x192.png",
-    "icons/icon-512x512.png",
-    "index.js",
-    "db.js",
-  ];
+const FILES_TO_CACHE = [
+  "/",
+ "/index.html",
+ "/index.js",
+ "/db.js",
+ "/styles.css",
+ "icons/icon-192x192.png",
+ "icons/icon-512x512.png",
+ "/manifest.webmanifest",
+ "/service-worker.js",
+];
 
-const precache = 'precache';
-const runtime = 'runtime';
+const STATIC_PRECACHE = "static-precache";
+const RUNTIME = "runtime-cache";
 
 self.addEventListener('install', (e) => {
-  e.waitUntil( caches.open(precache)
+  e.waitUntil( caches.open(PRECACHE)
     //caches must all be retrieved on install fails
-      .then((cache) => cache.addAll(files_to_cache))
+      .then((cache) => cache.addAll(FILES_TO_CACHE))
       .then(self.skipWaiting())
   );
 });
 
 self.addEventListener("activate", (e) => {
-  const cachesUsed = [precache, runtime];
+  const cachesUsed = [PRECACHE, RUNTIME];
   e.waitUntil( caches.keys()
       //array.filter returns those caches not matching cachesUsed
       .then(cacheNames => cacheNames.filter(cacheName => !cachesUsed.includes(cacheName)))
@@ -31,40 +32,45 @@ self.addEventListener("activate", (e) => {
   );
 });
 
-self.addEventListener('fetch', (e) => {
-  if (e.request.url.startsWith(self.location.origin)) {
-    e.respondWith( caches.match(e.request)
-    .then((cacheRes) => {
-        //Use cache if it exists
-        if (cacheRes != undefined)
-          return cacheRes;
-        //otherwise fallback to retrieving this resource from the network
-        else {
-          return caches.open(runtime).then((cache) => fetch(e.request)
-            .then((res) => cache.put(e.request, res.clone())
-            .then(() => res)));
-        }
-      })
-    );
-  }
-  //cache API response
-  else if (e.request.url.includes("/api/")) {
-    e.respondWith( caches.open(runtime)
-      .then(cache => {
-         return fetch(e.request)
-          .then(res => {
-            cache.put(e.request, res.clone());
-            return res;
-          })
-          .catch(() => caches.match(e.request));
-      })
-    );
-    return;
-  }
+// self.addEventListener("fetch", e => {
+//  // return out of function if GET isn't request or it's window's location
+//  if (e.request.method !== "GET" || e.request.url.startsWith(self.location.origin)) {
+//    e.respondWith(fetch(e.request));
+//    return;
+//  }
 
-  //serve static assets for non-API requests
-  e.respondWith( caches.open(precache)
-    .then(cache => cache.match(e.request).then(res => res || fetch(e.request)))
-  );
+//   //cache API response
+//   if (e.request.url.includes("/api/")) {
+//     e.respondWith( caches.open(runtime)
+//       .then(cache => {
+//          return fetch(e.request)
+//           .then(response => {
+//             console.log("Response is..." + res);
+//             //on successful response, copy into cache
+//             if (res.status === 200)
+//               cache.put(e.request, res.clone());
+//             return res;
+//           })
+//           //network offline, request from cache
+//           .catch(() => caches.match(e.request));
+//       })
+//     );
+//     return;
+//   }
+
+ //serve static assets for non-API requests
+ e.respondWith(
+   caches.match(e.request).then(cachedResponse => {
+     if (cachedResponse) {
+       return cachedResponse;
+     }
+
+     //Cache doesn't have requested resource, so try it with network.
+     return caches.open(RUNTIME)
+      .then(cache => fetch(e.request)
+        .then(res => cache.put(e.request, res.clone())
+          .then(() => res))
+      );
+   })
+ );
 });
-
