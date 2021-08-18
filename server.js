@@ -15,7 +15,7 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
-mongoose.connect(process.env.MONGO_URI || "mongodb://localhost/clusterclever", {
+mongoose.connect(process.env.MONGO_URI || "mongodb://localhost/budget", {
   useNewUrlParser: true,
   useFindAndModify: false,
   useCreateIndex: true,
