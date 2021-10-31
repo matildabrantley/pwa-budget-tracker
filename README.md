@@ -19,8 +19,11 @@ Progressive web application for tracking financial transactions and visualizing 
 * The following command installs dependencies:
   * npm i
 ## Features
+* Add or subtract funds
+* Visualize with smooth graphs
+* Maintain functionality offline like a native app
 # Screenshot
-![Screenshot](screenshot.jpg)
+![Screenshot](screenshot.png)
 
 # Video
 ## License
