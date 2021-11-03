@@ -5,10 +5,10 @@ Progressive Web Application for Budget Tracking.
 ### [My GitHub](https://github.com/matildabrantley)
 ## Table of Contents:
 * [Installing](#installing)
+* [Local Hosting](#localhosting)
 * [Usage](#usage)
 * [Features](#features)
 * [Screenshot](#screenshot)
-* [Video](#video)
 * [License](#license)
 * [Questions](#questions)
 ## Description
@@ -18,6 +18,9 @@ Progressive web application for tracking financial transactions and visualizing 
 ## Installing 
 * The following command installs dependencies:
   * npm i
+## Local Hosting
+* The following command runs locally hosted development server using nodemon:
+  * npm run develop
 ## Features
 * Add or subtract funds
 * Visualize with smooth graphs
@@ -25,7 +28,6 @@ Progressive web application for tracking financial transactions and visualizing 
 # Screenshot
 ![Screenshot](screenshot.png)
 
-# Video
 ## License
 The project is licensed under the MIT License license.
 ## Questions
